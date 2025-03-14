@@ -32,6 +32,12 @@ user_ritual_check = defaultdict(lambda: (date.min, "")) # Дневные рит�
 
 HISTORY_LIMIT = 3
 
+ADMIN_ID = os.getenv("ADMIN_ID")
+
+async def log_to_admin(bot, user_id, username, action):
+    """Отправляет лог администратору."""
+    log_text = f"📝 Лог: {username} (ID: {user_id}) использовал {action}"
+    await bot.send_message(ADMIN_ID, log_text)
 
 def load_predictions(filename="predictions.txt"):
     """Загружает предсказания из файла."""
@@ -94,6 +100,9 @@ class MagicBallState(StatesGroup):
 @dp.message(Command("start"))
 async def send_welcome(message: Message):
     user_name = message.from_user.first_name
+    user_id = message.from_user.id
+    username = message.from_user.username or "No username"
+    await log_to_admin(bot, user_id, username, "/start")
     keyboard = ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text="🔮 Получить предсказание")],
@@ -115,6 +124,8 @@ async def send_prediction(message: Message):
     prediction = random.choice(predictions)  # Случайное предсказание
     user_id = message.from_user.id
     user_name = message.from_user.first_name
+    username = message.from_user.username or "No username"
+    await log_to_admin(bot, user_id, username, "/prediction")
     user_history[user_id].append(prediction)
     if len(user_history[user_id]) > HISTORY_LIMIT:
         user_history[user_id].pop(0)
@@ -127,6 +138,8 @@ async def magic_command(message: Message):
     """Отправляет уровень магической энергии и логирует пользователя."""
     now = datetime.now().date()
     user_id = message.from_user.id
+    username = message.from_user.username or "No username"
+    await log_to_admin(bot, user_id, username, "/magic")
     if user_id in user_magic_check:
         last_check_date, magic_value = user_magic_check[user_id]
         if last_check_date == now:
@@ -141,6 +154,8 @@ async def luck_index(message: Message):
     """Отправляет уровень удачи и логирует пользователя."""
     user_id = message.from_user.id
     now = datetime.now().date()
+    username = message.from_user.username or "No username"
+    await log_to_admin(bot, user_id, username, "/luck")
     if user_id in user_luck_check:
         last_check_date, luck_value = user_luck_check[user_id]
         if last_check_date == now:
@@ -159,6 +174,9 @@ async def luck_index(message: Message):
 @dp.message(Command("oracle"))
 async def oracle_question(message: Message, state: FSMContext):
     """Оракул задаёт вопрос, ждет ответа и логирует пользователя."""
+    user_id = message.from_user.id
+    username = message.from_user.username or "No username"
+    await log_to_admin(bot, user_id, username, "/oracle")
     intro_text = (
         "🧙‍♂️ *Оракул мудр и загадочен...*\n\n"
         "Оракул задаст тебе философский вопрос. После этого ты можешь написать свой ответ, "
@@ -185,6 +203,8 @@ async def oracle_response(message: Message, state: FSMContext):
 async def daily_ritual(message: Message):
     """Отправляет ежедневное задание и логирует пользователя."""
     user_id = message.from_user.id
+    username = message.from_user.username or "No username"
+    await log_to_admin(bot, user_id, username, "/ritual")
     now = datetime.now().date()
     if user_id in user_ritual_check:
         last_check_date, ritual = user_ritual_check[user_id]
@@ -198,6 +218,9 @@ async def daily_ritual(message: Message):
 @dp.message(Command("magicball"))
 async def start_magic_ball(message: Message, state: FSMContext):
     """Шар предсказаний; ждет ответ и логирует пользователя."""
+    user_id = message.from_user.id
+    username = message.from_user.username or "No username"
+    await log_to_admin(bot, user_id, username, "/magicball")
     await message.answer("🎱 Шар предсказаний ждёт вопрос! Задай любой вопрос, и я дам ответ!", parse_mode="Markdown")
     await state.set_state(MagicBallState.waiting_for_question)
 
@@ -211,6 +234,8 @@ async def magic_ball_response(message: Message, state: FSMContext):
 async def show_history(message: Message):
     """Присылает историю в виде 3 последних предсказаний и логирует пользователя."""
     user_id = message.from_user.id
+    username = message.from_user.username or "No username"
+    await log_to_admin(bot, user_id, username, "/history")
     if user_id not in user_history or not user_history[user_id]:
         await message.answer("📜 У тебя пока нет предсказаний. Напиши /prediction, чтобы получить первое!")
         return
@@ -220,6 +245,9 @@ async def show_history(message: Message):
 @dp.message(Command("help"))
 async def send_help(message: Message):
     """Присылает инструкцию по использованию бота и логирует пользователя."""
+    user_id = message.from_user.id
+    username = message.from_user.username or "No username"
+    await log_to_admin(bot, user_id, username, "/help")
     help_text = """
 ℹ️ *Как пользоваться ботом предсказаний?*
 
