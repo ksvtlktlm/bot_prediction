@@ -37,7 +37,6 @@ bot_prediction/
 │── oracle_questions.txt     # База философских вопросов
 │── magic_ball_responses.txt # База ответов шара предсказаний
 │── oracle_responses.txt     # База обобщённых ответов Оракула
-│── user_logs.txt            # Логи пользователей (не загружается в Git)
 │── .gitignore               # Исключения для Git
 │── .venv/                   # Виртуальное окружение (не загружается в Git)
 ```
