@@ -32,7 +32,7 @@ user_ritual_check = defaultdict(lambda: (date.min, "")) # Дневные рит�
 
 HISTORY_LIMIT = 3
 
-ADMIN_ID = os.getenv("ADMIN_ID")
+ADMIN_ID = int(os.getenv("ADMIN_ID"))
 
 async def log_to_admin(bot, user_id, username, action):
     """Отправляет лог администратору."""
