@@ -11,6 +11,7 @@ from aiogram.filters import Command
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
+from keep_alive import keep_alive
 
 
 # Настройка логирования
@@ -289,6 +290,7 @@ async def handle_buttons(message: Message, state: FSMContext):
 
 async def main():
     """Запуск бота"""
+    keep_alive()
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
